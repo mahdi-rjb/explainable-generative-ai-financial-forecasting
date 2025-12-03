@@ -1,0 +1,15 @@
+pandas>=1.5
+numpy>=1.25
+matplotlib>=3.7
+scikit-learn>=1.2
+torch>=2.0
+transformers>=4.35
+yfinance>=0.2
+requests>=2.31
+beautifulsoup4>=4.12
+vaderSentiment>=3.3
+shap>=0.42
+streamlit>=1.28
+ta>=0.12
+joblib>=1.3
+altair>=5.2
