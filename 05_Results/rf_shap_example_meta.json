@@ -1,0 +1,6 @@
+{
+  "date": "2023-12-29",
+  "y_true": -0.0056766607997231,
+  "y_pred": -0.002063048040112993,
+  "csv_path": "C:\\Users\\Livkorg\\PycharmProjects\\explainable-generative-ai-financial-forecasting\\05_Results\\rf_shap_example_local_explanation_script.csv"
+}
