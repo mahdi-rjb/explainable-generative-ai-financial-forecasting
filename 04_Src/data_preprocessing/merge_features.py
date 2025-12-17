@@ -81,7 +81,7 @@ def main() -> None:
 
     prices_path = processed_dir / "sp500_prices_clean.csv"
     daily_sent_path = processed_dir / "sp500_news_sentiment_daily.csv"
-    features_path = processed_dir / "sp500_features_daily.csv"
+    features_path = processed_dir / "sp500_features_daily_with_vix.csv"
 
     os.makedirs(processed_dir, exist_ok=True)
 

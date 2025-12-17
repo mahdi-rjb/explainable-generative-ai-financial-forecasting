@@ -18,15 +18,8 @@ def load_lstm_model_and_metadata(
     project_root: Path | None = None,
 ) -> Tuple[LSTMForecastingModel, dict]:
     """
-    Load trained LSTM forecasting model and metadata
-    from the npz file and checkpoint.
-
-    Returns
-    -------
-    model : LSTMForecastingModel
-        Loaded model on CPU.
-    meta : dict
-        Contains window_size, feature_cols and any other metadata.
+    Load the trained LSTM model and associated metadata
+    using the sequence data that includes VIX.
     """
     if project_root is None:
         project_root = Path(__file__).resolve().parents[2]
@@ -34,8 +27,8 @@ def load_lstm_model_and_metadata(
     processed_dir = project_root / "02_Data" / "Processed"
     models_dir = project_root / "04_Src" / "models" / "checkpoints"
 
-    data_path = processed_dir / "sp500_model_data_window30.npz"
-    checkpoint_path = models_dir / "lstm_forecasting.pt"
+    data_path = processed_dir / "sp500_model_data_window30_with_vix.npz"
+    checkpoint_path = models_dir / "lstm_forecasting_with_vix.pt"
 
     npz = np.load(data_path, allow_pickle=True)
 
@@ -63,44 +56,38 @@ def load_lstm_model_and_metadata(
     return model, meta
 
 
-def load_latest_feature_window(
-    project_root: Path | None = None,
-    window_size: int | None = None,
-) -> Tuple[np.ndarray, pd.Timestamp]:
-    """
-    Load the last window of daily features for prediction.
 
-    Returns
-    -------
-    window : np.ndarray
-        Shape (window_size, num_features).
-    last_date : pd.Timestamp
-        Date corresponding to the last row in the window.
+def load_latest_feature_window(
+    project_root: Path | None,
+    window_size: int,
+) -> tuple[np.ndarray, pd.Timestamp]:
+    """
+    Load the most recent window of features for forecasting from
+    the daily features file that includes VIX.
     """
     if project_root is None:
         project_root = Path(__file__).resolve().parents[2]
 
     processed_dir = project_root / "02_Data" / "Processed"
-    features_path = processed_dir / "sp500_features_daily.csv"
+    features_path = processed_dir / "sp500_features_daily_with_vix.csv"
 
     df = pd.read_csv(features_path, parse_dates=["Date"])
     df = df.sort_values("Date").reset_index(drop=True)
-
-    if window_size is None:
-        window_size = 30
 
     if len(df) < window_size:
         raise ValueError(
             f"Not enough rows {len(df)} for window size {window_size}"
         )
 
-    window_df = df.iloc[-window_size:]
-    last_date = window_df["Date"].iloc[-1]
+    df_window = df.iloc[-window_size:]
+    last_date = df_window["Date"].iloc[-1]
 
+    # feature columns must match the ones used for training
+    # we reuse the same logic as in the sequence builder
     exclude_cols = ["Date"]
-    feature_cols = [c for c in df.columns if c not in exclude_cols]
+    feature_cols = [c for c in df_window.columns if c not in exclude_cols and c != "target_next_return"]
 
-    window = window_df[feature_cols].values
+    window = df_window[feature_cols].values.astype("float32")
 
     return window, last_date
 

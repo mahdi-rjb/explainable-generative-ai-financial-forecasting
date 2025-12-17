@@ -73,7 +73,7 @@ def main() -> None:
     project_root = Path(__file__).resolve().parents[2]
     processed_dir = project_root / "02_Data" / "Processed"
 
-    features_path = processed_dir / "sp500_features_daily.csv"
+    features_path = processed_dir / "sp500_features_daily_with_vix.csv"
 
     print(f"Loading features from: {features_path}")
     df = load_daily_features(features_path)

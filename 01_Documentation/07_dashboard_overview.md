@@ -48,6 +48,10 @@ The app relies on a small service layer:
 
 &nbsp;   \* predicts the next day log return
 
+The forecasting page uses an LSTM model trained on thirty day windows of daily features.
+These include price based indicators, aggregated news sentiment, and an external volatility index (VIX) integrated from a Kaggle macro dataset.
+The dashboard shows the inferred next day price as well as a summary of VIX levels in the input window.
+
 
 
 \* `04\_Src/services/generative\_service.py`

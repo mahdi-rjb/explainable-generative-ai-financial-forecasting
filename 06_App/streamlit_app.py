@@ -114,8 +114,8 @@ def load_global_shap_importance() -> pd.DataFrame:
 def page_forecast():
     st.header("Next day forecast")
     st.write(
-        "This view shows the LSTM based next day log return forecast for the S and P five hundred, "
-        "derived from the last thirty trading days of engineered features and news sentiment."
+        "This view shows the LSTM based next day return forecast using a thirty day window "
+        "of engineered features including price based indicators, news sentiment, and the VIX volatility index."
     )
 
     model, meta = get_forecasting_components()
@@ -142,6 +142,28 @@ def page_forecast():
         window,
         columns=meta["feature_cols"],
     )
+
+    if "vix_level" in df_window.columns:
+        st.subheader("VIX in the current window")
+
+        vix_series = df_window["vix_level"]
+
+        col_left, col_right = st.columns(2)
+
+        with col_left:
+            st.write(
+                f"VIX range in window: {vix_series.min():.2f} to {vix_series.max():.2f}"
+            )
+            st.write(f"VIX latest value in window: {vix_series.iloc[-1]:.2f}")
+
+        with col_right:
+            fig_vix, ax_vix = plt.subplots(figsize=(4, 2))
+            ax_vix.plot(vix_series.values)
+            ax_vix.set_xlabel("days in window")
+            ax_vix.set_ylabel("VIX level")
+            fig_vix.tight_layout()
+            st.pyplot(fig_vix)
+
     st.dataframe(df_window)
 
 
